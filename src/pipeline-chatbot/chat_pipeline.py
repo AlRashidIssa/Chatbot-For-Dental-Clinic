@@ -17,11 +17,12 @@ from models.embedding_model import EmbeddingModelLoader
 from RetrievalAugmentedGeneration.retrieve_relevant_documents import RetrieveRelevantDocuments
 from RetrievalAugmentedGeneration.generative import ChatbotResponse
 
-from configs import  load_config_from_yaml, ConfigPipeline
+from configs import load_config_from_yaml, ConfigPipeline
 
 config = load_config_from_yaml()
 
-class IEndToEndPipeline(ABC):
+# Interface for Pipeline
+class IFullPipelineChatbot(ABC):
     """
     Abstract base class defining the contract for an end-to-end pipeline.
     Any concrete implementation must define the `run` method.
@@ -39,7 +40,8 @@ class IEndToEndPipeline(ABC):
         """
         pass
 
-class EndToEndPipeline(IEndToEndPipeline):
+
+class IFullPipelineChatbot(IFullPipelineChatbot):
     """
     Concrete implementation of the end-to-end pipeline.
     
@@ -55,8 +57,17 @@ class EndToEndPipeline(IEndToEndPipeline):
             config (ConfigPipeline): The configuration object containing pipeline parameters.
         """
         self.config = config
+        self._is_initialized = False  # Flag to check if the pipeline has been initialized
 
-        # Load data once from the drive
+    def initialize_pipeline(self):
+        """
+        Initializes the pipeline once by loading data, models, and other necessary components.
+        This method should only be called once.
+        """
+        if self._is_initialized:
+            PipelineOperation.info("Pipeline has already been initialized. Skipping initialization.")
+            return
+
         PipelineOperation.info(f"Starting data ingestion from drive: {self.config.url}")
         LoadFromDrive().load(
             url=self.config.url,
@@ -107,6 +118,10 @@ class EndToEndPipeline(IEndToEndPipeline):
             model_name=self.config.embedding_model_name
         )
 
+        # Set the flag to indicate that the pipeline has been initialized
+        self._is_initialized = True
+        PipelineOperation.info("Pipeline initialization completed.")
+
     def run(self, query: str) -> str:
         """
         Processes the given query using preloaded data and models to generate a chatbot response.
@@ -118,6 +133,10 @@ class EndToEndPipeline(IEndToEndPipeline):
             str: The chatbot's response.
         """
         try:
+            # Initialize the pipeline if it's not already initialized
+            if not self._is_initialized:
+                self.initialize_pipeline()
+
             # Retrieve relevant documents based on the query
             PipelineOperation.info(f"Retrieving top {self.config.top_k} documents for query: {query}.")
             relevant_docs = RetrieveRelevantDocuments(top_k=self.config.top_k).relevant(
@@ -144,11 +163,11 @@ class EndToEndPipeline(IEndToEndPipeline):
 
         
 if __name__ == "__main__":
-    # Test Case uase
+    # Test Case
     while True:
-        query = input("Enter Question, for quite type exit: ")
+        query = input("Enter Question, for quit type exit: ")
         if query == "exit":
             break
 
-        response = EndToEndPipeline().run(query=query,
-                                          config=config)
+        response = IFullPipelineChatbot(config=config).run(query=query)
+        print(f"Response: {response}")
