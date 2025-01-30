@@ -18,6 +18,9 @@ load_dotenv()
 # Get Hugging Face token
 HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 
+# Log into HuggingFace using the provided access token
+login(HUGGINGFACE_TOKEN)
+
 # Ensure that the token is loaded
 if not huggingface_token:
     mss="Hugging Face token is missing. Please check your .env file."
@@ -66,14 +69,13 @@ class ILoadLLMHuggingFace(ABC):
     """
 
     @abstractmethod
-    def load(self, model_id: str, access_token: str, quantization: bool,
+    def load(self, model_id: str, quantization: bool,
              quantization_config: Optional[dict] = None, custom_config: Optional[CustomModelConfig] = None) -> HuggingFacePipeline:
         """
         Abstract method to load a HuggingFace model and wrap it in a LangChain pipeline.
 
         Args:
             model_id (str): The model identifier from HuggingFace.
-            access_token (str): The HuggingFace API access token for authentication.
             quantization (bool): Whether quantization should be applied.
             quantization_config (Optional[dict], optional): Configuration for quantization if enabled.
             custom_config (Optional[CustomModelConfig], optional): Custom model config for pipeline parameters.
@@ -94,7 +96,7 @@ class LoadLLMHuggingFace(ILoadLLMHuggingFace):
     This class handles logging, error handling, and monitoring during the loading process.
     """
 
-    def load(self, model_id: str, access_token: str, quantization: bool,
+    def load(self, model_id: str, quantization: bool,
              quantization_config: Optional[dict] = None, custom_config: Optional[CustomModelConfig] = None) -> HuggingFacePipeline:
         """
         Loads the specified HuggingFace model, applies optional quantization, and 
@@ -102,7 +104,6 @@ class LoadLLMHuggingFace(ILoadLLMHuggingFace):
 
         Args:
             model_id (str): The HuggingFace model ID to load.
-            access_token (str): The HuggingFace access token.
             quantization (bool): Whether quantization is enabled.
             quantization_config (Optional[dict], optional): The configuration for quantization.
             custom_config (Optional[CustomModelConfig], optional): The custom configuration for the pipeline.
@@ -116,8 +117,7 @@ class LoadLLMHuggingFace(ILoadLLMHuggingFace):
         try:
             ModelingOperation.info(f"Starting to load the model '{model_id}' from HuggingFace.")
             
-            # Log into HuggingFace using the provided access token
-            login(HUGGINGFACE_TOKEN)
+
             ModelingOperation.info(f"Successfully logged into HuggingFace using the provided token.")
             
             # Handle quantization configuration if enabled
@@ -172,24 +172,24 @@ class LoadLLMHuggingFace(ILoadLLMHuggingFace):
             raise HighLevelErrors.error(f"Failed to load model '{model_id}'.", e)
 
 
-# Example usage
-if __name__ == "__main__":
-    model_id = "gpt2"  # Example model ID
-    access_token = ""
-    quantization = False
-    quantization_config = None  # Optional: provide a custom configuration for quantization if needed
+# # Example usage
+# if __name__ == "__main__":
+#     model_id = "gpt2"  # Example model ID
+#     access_token = ""
+#     quantization = False
+#     quantization_config = None  # Optional: provide a custom configuration for quantization if needed
 
-    # Custom pipeline parameters
-    custom_config = CustomModelConfig(temperature=0.8, top_p=0.95)
+#     # Custom pipeline parameters
+#     custom_config = CustomModelConfig(temperature=0.8, top_p=0.95)
 
-    try:
-        # Instantiate the loader and load the model with custom config
-        loader = LoadLLMHuggingFace()
-        llm_pipeline = loader.load(model_id, access_token, quantization, quantization_config, custom_config)
+#     try:
+#         # Instantiate the loader and load the model with custom config
+#         loader = LoadLLMHuggingFace()
+#         llm_pipeline = loader.load(model_id, access_token, quantization, quantization_config, custom_config)
 
-        # You can now use the `llm_pipeline` for inference or further processing
-        ModelingOperation.info("Model is ready for inference.")
+#         # You can now use the `llm_pipeline` for inference or further processing
+#         ModelingOperation.info("Model is ready for inference.")
     
-    except Exception as e:
-        # Catch and handle errors specific to model loading
-        HighLevelErrors.error(f"An error occurred during model loading: {e}")
+#     except Exception as e:
+#         # Catch and handle errors specific to model loading
+#         HighLevelErrors.error(f"An error occurred during model loading: {e}")
