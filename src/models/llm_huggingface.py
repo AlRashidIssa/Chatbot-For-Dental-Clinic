@@ -4,6 +4,7 @@ from huggingface_hub import login
 from typing import Union, Optional
 import os, sys
 from abc import ABC, abstractmethod
+from dotenv import load_dotenv
 
 # Get the absolute path to the directory one level above the current file's directory
 MAIN_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
@@ -11,6 +12,17 @@ sys.path.append(MAIN_DIR)
 
 from utils.monitors import ModelingOperation, HighLevelErrors  # Loges
 
+# Load environment variables from a .env file
+load_dotenv()
+
+# Get Hugging Face token
+HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
+
+# Ensure that the token is loaded
+if not huggingface_token:
+    mss="Hugging Face token is missing. Please check your .env file."
+    HighLevelErrors.error(mss)
+    raise ValueError(mss)
 
 
 class CustomModelConfig:
@@ -105,7 +117,7 @@ class LoadLLMHuggingFace(ILoadLLMHuggingFace):
             ModelingOperation.info(f"Starting to load the model '{model_id}' from HuggingFace.")
             
             # Log into HuggingFace using the provided access token
-            login(access_token)
+            login(HUGGINGFACE_TOKEN)
             ModelingOperation.info(f"Successfully logged into HuggingFace using the provided token.")
             
             # Handle quantization configuration if enabled
