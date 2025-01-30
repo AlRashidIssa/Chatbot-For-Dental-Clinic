@@ -22,7 +22,7 @@ HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 login(HUGGINGFACE_TOKEN)
 
 # Ensure that the token is loaded
-if not HUGGINGFACE_TOKEN:
+if not huggingface_token:
     mss="Hugging Face token is missing. Please check your .env file."
     HighLevelErrors.error(mss)
     raise ValueError(mss)
