@@ -27,7 +27,6 @@ top_p: 0.9
 max_new_tokens: 256
 repetition_penalty: 1.1
 model_id: "meta-llama/Llama-3.1-8B"
-access_token: ""
 embedding_model_name: "entence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 # retrieval configuration
