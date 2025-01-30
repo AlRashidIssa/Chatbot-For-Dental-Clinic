@@ -21,13 +21,6 @@ HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 # Log into HuggingFace using the provided access token
 login(HUGGINGFACE_TOKEN)
 
-# Ensure that the token is loaded
-if not HUGGINGFACE_TOKEN:
-    mss="Hugging Face token is missing. Please check your .env file."
-    HighLevelErrors.error(mss)
-    raise ValueError(mss)
-
-
 class CustomModelConfig:
     """
     A class to hold custom parameters for the model pipeline.
