@@ -27,7 +27,6 @@ class ConfigPipeline:
     max_new_tokens: int
     repetition_penalty: float
     model_id: str
-    access_token: str
     embedding_model_name: str
     top_k: int
 
@@ -62,7 +61,6 @@ def load_config_from_yaml(file_path: str = f"{MAIN_DIR}/config/pipeline_config.y
         max_new_tokens=config_data["max_new_tokens"],
         repetition_penalty=config_data["repetition_penalty"],
         model_id=config_data["model_id"],
-        access_token=config_data["access_token"],
         embedding_model_name=config_data["embedding_model_name"],
         top_k=config_data["top_k"]
     )
