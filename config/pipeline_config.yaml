@@ -1,0 +1,34 @@
+# Pipeline configuration
+url: "https://drive.google.com/file/d/1iPUMC144JCmTf0_wmNhT-7mmAZsNjQvK/view?usp=sharing"
+save_archive: "/workspaces/Chatbot-For-Dental-Clinic/Data/arciveData"
+name: "ara_database"
+zip_path: "/workspaces/Chatbot-For-Dental-Clinic/Data/arciveData/ara_database.zip"
+extract_to: "/workspaces/Chatbot-For-Dental-Clinic/Data/Database"
+database_path: "/workspaces/Chatbot-For-Dental-Clinic/Data/Database/ara_database.sqlite"
+
+# Dataframe columns
+service_columns:
+  - "service_name"
+  - "price"
+  - "description"
+branch_columns:
+  - "branch_name"
+  - "address"
+  - "phone"
+  - "working_hours"
+social_columns:
+  - "platform_name"
+  - "link"
+
+# Model configuration
+temperature: 0.7
+do_sample: true
+top_p: 0.9
+max_new_tokens: 256
+repetition_penalty: 1.1
+model_id: "meta-llama/Llama-3.1-8B"
+access_token: ""
+embedding_model_name: "entence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+
+# retrieval configuration
+top_k: 5
