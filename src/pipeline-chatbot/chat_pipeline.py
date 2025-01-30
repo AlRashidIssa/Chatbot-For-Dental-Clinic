@@ -41,7 +41,7 @@ class IFullPipelineChatbot(ABC):
         pass
 
 
-class IFullPipelineChatbot(IFullPipelineChatbot):
+class FullPipelineChatbot(IFullPipelineChatbot):
     """
     Concrete implementation of the end-to-end pipeline.
     
@@ -169,5 +169,5 @@ if __name__ == "__main__":
         if query == "exit":
             break
 
-        response = IFullPipelineChatbot(config=config).run(query=query)
+        response = FullPipelineChatbot(config=config).run(query=query)
         print(f"Response: {response}")
