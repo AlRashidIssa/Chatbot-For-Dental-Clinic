@@ -1,0 +1,10 @@
+*.db
+*.log
+*.zip
+
+EnvChat
+
+Data
+
+__pycache__
+Data/database_v1.zip
