@@ -18,10 +18,6 @@ LOG_DIR = os.path.abspath(LOG_DIR)
 
 os.makedirs(LOG_DIR, exist_ok=True)
 
-# Create Dir for Data
-os.makedirs("Data/", exist_ok=True)
-os.makedirs("Data/Database/", exist_ok=True)
-
 # Create a function to set up the logger
 def setup_logger(name, log_file, level=logging.INFO):
     # Create a logger
