@@ -38,14 +38,13 @@ class FullPipelineChatbot(IFullPipelineChatbot):
             cls._instance = super(FullPipelineChatbot, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self, openai_models: bool, config: ConfigPipeline):
+    def __init__(self,config: ConfigPipeline):
         """Initialize the pipeline only once."""
         if hasattr(self, '_initialized') and self._initialized:
             return
         
         self.config = config
         self._initialized = False
-        self.openai_models = openai_models
         self.initialize_pipeline()
 
     def initialize_pipeline(self):
@@ -79,7 +78,7 @@ class FullPipelineChatbot(IFullPipelineChatbot):
                 max_new_tokens=self.config.max_new_tokens,
                 repetition_penalty=self.config.repetition_penalty
             )
-            if self.openai_models:
+            if self.config.openai:
                 PipelineOperation.info("Loading OpenAI Models [LLM, Embedding]...")
                 self.llm = APIOpenAIModel().load(
                     model_name=self.config.openai_model,
