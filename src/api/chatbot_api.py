@@ -42,6 +42,7 @@ async def chat(query_model: QueryModel):
     try:
         query = query_model.query
         response = chatbot.run(query=query)
+        print("Chatbot Response:", response)  # Debugging
         return {"response": response}
     except Exception as e:
         HighLevelErrors.error(f"Error in API: {e}")
