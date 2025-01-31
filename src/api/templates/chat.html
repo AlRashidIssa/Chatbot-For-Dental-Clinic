@@ -39,6 +39,8 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            max-height: 500px;
+            scroll-behavior: smooth; /* Smooth scrolling */
         }
 
         .message {
@@ -98,42 +100,62 @@
     </div>
 
     <script>
-        async function sendMessage() {
-            const userInput = document.getElementById('user-input').value;
-            if (userInput.trim() === "") return;
-
-            // Append user message to chat box
+        // Scroll to the bottom function
+        function scrollToBottom() {
             const chatBox = document.getElementById('chat-box');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Send message when Enter is pressed
+        document.getElementById('user-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value.trim();
+            if (!userInput) return;
+
+            const chatBox = document.getElementById('chat-box');
+
+            // Append user message
             const userMessage = document.createElement('div');
             userMessage.className = 'message user-message';
             userMessage.textContent = userInput;
             chatBox.appendChild(userMessage);
-
-            // Clear input field
             document.getElementById('user-input').value = '';
 
-            // Scroll to bottom of chat box
-            chatBox.scrollTop = chatBox.scrollHeight;
+            scrollToBottom();
 
-            // Send message to backend and get response
-            const response = await fetch('/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ query: userInput }),
-            });
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: userInput }),
+                });
 
-            const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
 
-            // Append bot response to chat box
-            const botMessage = document.createElement('div');
-            botMessage.className = 'message bot-message';
-            botMessage.textContent = data.response;
-            chatBox.appendChild(botMessage);
+                const data = await response.json();
 
-            // Scroll to bottom of chat box
-            chatBox.scrollTop = chatBox.scrollHeight;
+                // Append bot message
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message bot-message';
+                botMessage.textContent = data.response;
+                chatBox.appendChild(botMessage);
+
+            } catch (error) {
+                console.error('Error:', error);
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'message bot-message';
+                errorMessage.textContent = 'Error: Unable to fetch response.';
+                chatBox.appendChild(errorMessage);
+            }
+
+            scrollToBottom();
         }
     </script>
 </body>
