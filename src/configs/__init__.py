@@ -29,6 +29,10 @@ class ConfigPipeline:
     model_id: str
     embedding_model_name: str
     top_k: int
+    openai_config_embedding: dict
+    openai_embedding: str
+    openai_model: str
+    openai: bool
 
 
 def load_config_from_yaml(file_path: str = f"{MAIN_DIR}/config/pipeline_config.yaml") -> ConfigPipeline:
@@ -62,5 +66,9 @@ def load_config_from_yaml(file_path: str = f"{MAIN_DIR}/config/pipeline_config.y
         repetition_penalty=config_data["repetition_penalty"],
         model_id=config_data["model_id"],
         embedding_model_name=config_data["embedding_model_name"],
-        top_k=config_data["top_k"]
+        top_k=config_data["top_k"],
+        openai_config_embedding= ,
+        openai_embedding= ,
+        openai_model= ,
+        openai= ,
     )
