@@ -31,3 +31,15 @@ embedding_model_name: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-
 
 # retrieval configuration
 top_k: 5
+
+# Opne AI Model
+openai_config_embedding:
+  temperature: 0.7
+  top_p: 1.0
+  max_new_tokens: 150
+  do_sample: true
+  repetition_penalty: 1.0
+  
+openai_embedding: "text-embedding-ada-002"  # Specify the embedding model, e.g., OpenAI Ada embedding
+openai_model: "gpt-4"  # Specify the LLM model, e.g., GPT-4 or GPT-3.5-turbo
+openai: True
