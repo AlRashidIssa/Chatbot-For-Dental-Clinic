@@ -12,15 +12,6 @@ sys.path.append(MAIN_DIR)
 
 from utils.monitors import ModelingOperation, HighLevelErrors  # Loges
 
-# Load environment variables from a .env file
-load_dotenv(".ven")
-
-# Get Hugging Face token
-HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
-
-# Log into HuggingFace using the provided access token
-login(HUGGINGFACE_TOKEN)
-
 class CustomModelConfig:
     """
     A class to hold custom parameters for the model pipeline.
@@ -107,6 +98,15 @@ class LoadLLMHuggingFace(ILoadLLMHuggingFace):
         Raises:
             ModelLoadingError: If any error occurs during the loading or configuration process.
         """
+        # Load environment variables from a .env file
+        load_dotenv(".ven")
+
+        # Get Hugging Face token
+        HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
+
+        # Log into HuggingFace using the provided access token
+        login(HUGGINGFACE_TOKEN)
+
         try:
             ModelingOperation.info(f"Starting to load the model '{model_id}' from HuggingFace.")
             
