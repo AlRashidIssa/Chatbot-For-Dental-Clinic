@@ -13,7 +13,6 @@ sys.path.append(MAIN_DIR)
 from utils.monitors import ModelingOperation, HighLevelErrors
 
 # Get OpenAI API Key
-openai.api_key = os.getenv("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")
 
 class IAPIOpenAIModel(ABC):
     """

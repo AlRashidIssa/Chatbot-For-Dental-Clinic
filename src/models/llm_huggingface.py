@@ -13,7 +13,7 @@ sys.path.append(MAIN_DIR)
 from utils.monitors import ModelingOperation, HighLevelErrors  # Loges
 
 # Load environment variables from a .env file
-load_dotenv("EnvChat")
+load_dotenv(".ven")
 
 # Get Hugging Face token
 HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
