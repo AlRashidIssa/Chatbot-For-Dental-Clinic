@@ -67,8 +67,9 @@ def load_config_from_yaml(file_path: str = f"{MAIN_DIR}/config/pipeline_config.y
         model_id=config_data["model_id"],
         embedding_model_name=config_data["embedding_model_name"],
         top_k=config_data["top_k"],
-        openai_config_embedding= ,
-        openai_embedding= ,
-        openai_model= ,
-        openai= ,
+
+        openai_config_embedding=config_data["openai_config_embedding"],
+        openai_embedding=config_data["openai_embedding"],
+        openai_model=config_data["openai_model"],
+        openai=config_data["openai"],
     )
