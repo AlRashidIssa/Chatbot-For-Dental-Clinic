@@ -1,6 +1,6 @@
 # Pipeline configuration
 url: "https://drive.google.com/file/d/1iPUMC144JCmTf0_wmNhT-7mmAZsNjQvK/view?usp=sharing"
-save_archive: "/workspaces/Chatbot-For-Dental-Clinic/Data/arciveData"
+save_archive: "/workspaces/Chatbot-For-Dental-Clinic/Data/Database"
 name: "ara_database"
 zip_path: "/workspaces/Chatbot-For-Dental-Clinic/Data/arciveData/ara_database.zip"
 extract_to: "/workspaces/Chatbot-For-Dental-Clinic/Data/Database"
