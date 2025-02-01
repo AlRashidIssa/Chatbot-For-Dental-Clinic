@@ -71,11 +71,8 @@ class LoadFromDrive(ILoadFromDrive):
             error_msg = f"The file name must be a string. Provided type: {type(name)}"
             HighLevelErrors.error(error_msg)
             raise TypeError(error_msg)
-
-        if not os.path.exists(save_archive):
-            error_msg = f"The specified save directory does not exist: {save_archive}"
-            HighLevelErrors.error(error_msg)
-            raise FileNotFoundError(error_msg)
+        os.makedirs(f"{os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))}/Data")
+        os.makedirs(save_archive, exist_ok=True)
 
         try:
             # Extract the file ID from the Google Drive URL
