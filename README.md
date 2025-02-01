@@ -49,20 +49,76 @@ python main.py
 ## Project Structure
 
 ```
-Chatbot-For-Dental-Clinic/
-│── src/
-│   ├── main.py  # Entry point of the chatbot
-│   ├── data_operation/
-│   │   ├── ingest_database.py  # Database ingestion logic
-│   │   ├── pull_from_database.py  # Fetching data
-│   ├── models/
-│   │   ├── embedding_model.py  # Text embedding model
-│   │   ├── llm_huggingface.py  # LLM integration
-│   ├── utils/
-│   │   ├── get_size.py  # Utility functions
-│   │   ├── monitors.py  # Performance monitoring
-│── requirements.txt  # Dependencies
-│── README.md  # Documentation
+📦src
+ ┣ 📂RetrievalAugmentedGeneration
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┣ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜generative.cpython-312.pyc
+ ┃ ┃ ┗ 📜retrieve_relevant_documents.cpython-312.pyc
+ ┃ ┣ 📜__init__.py
+ ┃ ┣ 📜generative.py
+ ┃ ┗ 📜retrieve_relevant_documents.py
+ ┣ 📂__pycache__
+ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┣ 📂api
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┣ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┗ 📜chatbot_api.cpython-312.pyc
+ ┃ ┣ 📂static
+ ┃ ┃ ┗ 📜styles.css
+ ┃ ┣ 📂templates
+ ┃ ┃ ┗ 📜chat.html
+ ┃ ┣ 📜__init__.py
+ ┃ ┗ 📜chatbot_api.py
+ ┣ 📂cash
+ ┃ ┗ 📜__init__.py
+ ┣ 📂configs
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┗ 📜__init__.py
+ ┣ 📂data_operation
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┣ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜combine_dataframe_with_text.cpython-312.pyc
+ ┃ ┃ ┣ 📜ingest_database.cpython-312.pyc
+ ┃ ┃ ┣ 📜pull_from_database.cpython-312.pyc
+ ┃ ┃ ┗ 📜unzip_file.cpython-312.pyc
+ ┃ ┣ 📜__init__.py
+ ┃ ┣ 📜combine_dataframe_with_text.py
+ ┃ ┣ 📜ingest_database.py
+ ┃ ┣ 📜pull_from_database.py
+ ┃ ┗ 📜unzip_file.py
+ ┣ 📂models
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┣ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜embedding_model.cpython-312.pyc
+ ┃ ┃ ┣ 📜llm_huggingface.cpython-312.pyc
+ ┃ ┃ ┗ 📜openai_model.cpython-312.pyc
+ ┃ ┣ 📜__init__.py
+ ┃ ┣ 📜embedding_model.py
+ ┃ ┣ 📜llm_huggingface.py
+ ┃ ┗ 📜openai_model.py
+ ┣ 📂pipeline_chatbot
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┣ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┗ 📜chatbot_pipeline.cpython-312.pyc
+ ┃ ┣ 📜__init__.py
+ ┃ ┗ 📜chatbot_pipeline.py
+ ┣ 📂save_pydantic
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┣ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┗ 📜history_chat.cpython-312.pyc
+ ┃ ┣ 📜__init__.py
+ ┃ ┗ 📜history_chat.py
+ ┣ 📂utils
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┣ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜get_size.cpython-312.pyc
+ ┃ ┃ ┗ 📜monitors.cpython-312.pyc
+ ┃ ┣ 📜__init__.py
+ ┃ ┣ 📜get_size.py
+ ┃ ┗ 📜monitors.py
+ ┗ 📜__init__.py
 ```
 
 ## Contributing
