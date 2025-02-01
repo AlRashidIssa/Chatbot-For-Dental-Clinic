@@ -41,9 +41,13 @@ async def read_root(request: Request):
 async def chat(query_model: QueryModel):
     try:
         query = query_model.query
-        response = chatbot.run(query=query)
-        print("Chatbot Response:", response)  # Debugging
+        response = chatbot.run(query=query)  # Run the query through the chatbot pipeline
+        print("Chatbot Response:", response)  # Debugging to ensure the response is correct
+
+        # Ensure response is formatted for the front-end
         return {"response": response}
+    
     except Exception as e:
         HighLevelErrors.error(f"Error in API: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
