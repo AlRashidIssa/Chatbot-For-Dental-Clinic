@@ -133,4 +133,4 @@ This project is licensed under the MIT License.
 
 For questions or suggestions, contact alrashidissa2001@hotmail.com or open an issue on GitHub.
 
-![Chat Image](https://example.com/path/to/image.png)
+![Chat Image](assets/image.png)
