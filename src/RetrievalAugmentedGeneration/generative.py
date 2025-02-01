@@ -24,7 +24,7 @@ class IChatbotResponse(ABC):
     """
 
     @abstractmethod
-    def gen(self, query, relevant_docs, llm):
+    def gen(self, query, relevant_docs: dict, llm):
         """
         Generates a chatbot response based on user input and relevant data.
 
@@ -43,7 +43,7 @@ class ChatbotResponse(IChatbotResponse):
     Concrete class for generating chatbot responses using an LLM.
     """
 
-    def gen(self, query, relevant_docs, llm):
+    def gen(self, query, relevant_docs: dict, llm):
         """
         Generates a chatbot response based on user input and available data.
 
@@ -56,75 +56,61 @@ class ChatbotResponse(IChatbotResponse):
             str: The chatbot's response or an error message.
         """
         try:
-            ModelingOperation.info("Starating Generation Response")
+            ModelingOperation.info("Starting Generation Response")
             # Step 1: Extract relevant data from documents
-            services = ", ".join(relevant_docs.get("services", {}).get("service_name", []))
-            branches = ", ".join(relevant_docs.get("branches", {}).get("branch_name", []))
-            social_media = ", ".join(relevant_docs.get("social_media", {}).get("platform_name", []))
+            services = ", ".join(relevant_docs.get("services", {}).get("combined", []))
+            branches = ", ".join(relevant_docs.get("branches", {}).get("combined", []))
+            social_media = ", ".join(relevant_docs.get("social_media", {}).get("combined", []))
 
+            ModelingOperation.info(f"""
+                                    The relevant data from documents:
+                                    Service: {services}.\n
+                                    Branches: {branches}.\n
+                                    SOcial_media: {social_media}.\n
+                                    """)
             # Define prompt
             prompt = ChatPromptTemplate(
-                [
+                messages=[
                     MessagesPlaceholder(variable_name="chat_history"),
                     HumanMessagePromptTemplate.from_template("{text}")
                 ]
             )
 
-            # Step 5: Set up memory to track conversation history
+            # Memory for chat history
             memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-            # chat_history = memory.load_memory_variables({}).get("chat_history", "")
 
-            legacy_chain = LLMChain(
-                llm=llm,
-                prompt=prompt,
-                memory=memory
+            # Define chain
+            chat_chain = prompt | llm
 
-            )            
-            # Step 6: Define a RunnableLambda for model invocation
-            # def run_model(inputs):
-            #     return legacy_chain.invoke(inputs)
-
-            # chat_chain = prompt | RunnableLambda(run_model)
-            
-
-            # Step 7: Invoke the LLM model
-            response = legacy_chain.invoke({"text":f"""
-                You are a helpful chatbot assisting users in Hashmit Kingdom, Jordan. Your goal is to provide clear, concise, and accurate answers based on the available data. Ensure that your answers are precise, relevant, and easy to understand.
-
+            # Invoke the LLM model
+            response = chat_chain.invoke({
+                "chat_history": memory.load_memory_variables({}).get("chat_history", []),
+                "text": f"""
+                You are a helpful chatbot assisting users in Hashmit Kingdom, Jordan.
                 ### Information available:
-                1. **Available services at our clinic:**
-                {services}
-
-                2. **Our branches in Saudi Arabia:**
-                {branches}
-
-                3. **Social media platforms to contact us:**
-                {social_media}
-
-                ### Instructions:
-                - Respond to the user's query based on the information provided above.
-                - If the query asks about a specific service, branch, or social media platform, provide relevant details.
-                - If the query is general or unclear, politely clarify and offer to help further.
-                - Be sure to address the user's question completely, providing relevant information when necessary.
+                1. **Available services at our clinic:** {services}
+                2. **Our branches in Saudi Arabia:** {branches}
+                3. **Social media platforms to contact us:** {social_media}
 
                 ### User's question:
                 {query}
-                Note: The answer is in the same language as the question.
+
+                Note: Answer in the same language as the question.
+                Note: The Response Markdown Format.
                 ### Response:
-                """})            
+                """
+            })
+
+
             # If response is a dictionry, use get.()
             if isinstance(response, dict):
-                # Step 8: Extract the chatbot's response
                 assistant_message = response.get("text", "").strip().split("Response:")[-1].strip()
+            elif hasattr(response, "content"):  # Handle AIMessage case
+                assistant_message = response.content.strip().split("Response:")[-1].strip()
             else:
-                # Handle the case when response is a string (or something else)
-                assistant_message = response.strip().split("Response:")[-1].strip()
+                assistant_message = str(response).strip().split("Response:")[-1].strip()
 
-            # # Step 9: Save conversation context to memory
-            # memory.save_context(
-            #     inputs={"input_prompt": input_prompt},
-            #     outputs={"response": assistant_message}
-            # )
+
             ModelingOperation.info("Finishing Gneration Response")
             return assistant_message
 
