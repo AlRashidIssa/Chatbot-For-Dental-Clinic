@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 from abc import ABC, abstractmethod
 
-# Get the absolute path to the directory one level above the current file's directory
+# Get the absolute path to the directory two levels above the current file's directory
 MAIN_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
 sys.path.append(MAIN_DIR)
 
@@ -45,28 +45,45 @@ class CombinedTables(ICombinedTables):
             pd.DataFrame: The modified DataFrame with a new 'combined' column.
 
         Raises:
-            ValueError: If `columns` is not a list or `df` is not a DataFrame, 
+            ValueError: If `columns` is not a list, `df` is not a DataFrame,
                         or if any column in `columns` does not exist in `df`.
         """
-        DataOperation.info("Starting Combining Columns")
+        DataOperation.info("Starting to combine columns.")
+
         # Input validation
         if not isinstance(columns, list):
             HighLevelErrors.error("The 'columns' parameter must be a list of column names.")
             raise ValueError("The 'columns' parameter must be a list of column names.")
-        DataOperation.info("Verified Types Columns")
+
         if not isinstance(df, pd.DataFrame):
             HighLevelErrors.error("The 'df' parameter must be a pandas DataFrame.")
             raise ValueError("The 'df' parameter must be a pandas DataFrame.")
-        DataOperation.info("Verified Types Data")
+
+        if not columns:
+            HighLevelErrors.error("The 'columns' list is empty. Provide at least one column name.")
+            raise ValueError("The 'columns' list is empty. Provide at least one column name.")
+
         for col in columns:
             if col not in df.columns:
                 HighLevelErrors.error(f"Column '{col}' does not exist in the DataFrame.")
+                raise ValueError(f"Column '{col}' does not exist in the DataFrame.")
 
         # Combine the specified columns into a new column named 'combined'
-        df["combined"] = df[columns].astype(str).agg(' '.join, axis=1)
-        DataOperation.info("Successfully Combined Columns")
+        df_copy = df.copy()  # Ensure original DataFrame is not modified
+        df_copy["combined"] = df_copy[columns].astype(str).agg(' '.join, axis=1)
 
-        return df
+        DataOperation.info(f"Successfully combined columns: {columns}")
+        
+        # Save to CSV
+        MAIN_DIR_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+        data_dir = os.path.join(MAIN_DIR_ROOT, "Data")
+        os.makedirs(data_dir, exist_ok=True)  # Ensure directory exists
+
+        csv_path = os.path.join(data_dir, f"data{columns[-1]}.csv")
+        df_copy.to_csv(csv_path, index=False)
+        DataOperation.info(f"Successfully saved DataFrame to CSV: {csv_path}")
+
+        return df_copy
 
 # Example usage
 if __name__ == "__main__":
