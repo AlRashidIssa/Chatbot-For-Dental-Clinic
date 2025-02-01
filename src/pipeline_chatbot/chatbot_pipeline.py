@@ -11,7 +11,7 @@ from data_operation.pull_from_database import PullDataFromDatabaseQuery
 from data_operation.combine_dataframe_with_text import CombinedTables
 from models.llm_huggingface import LoadLLMHuggingFace, CustomModelConfig
 from models.embedding_model import EmbeddingModelLoader
-from models.openai_model import APIOpenAIModel, APIOpenAIEmbeddingModel
+from models.openai_model import APIOpenAIModel
 from RetrievalAugmentedGeneration.retrieve_relevant_documents import RetrieveRelevantDocuments
 from RetrievalAugmentedGeneration.generative import ChatbotResponse
 from configs import load_config_from_yaml, ConfigPipeline
@@ -46,6 +46,7 @@ class FullPipelineChatbot(IFullPipelineChatbot):
         self.config = config
         self._initialized = False
         self.initialize_pipeline()
+        self.embedding_model = None
 
     def initialize_pipeline(self):
         """Initializes the pipeline and loads necessary models and data."""
@@ -82,12 +83,8 @@ class FullPipelineChatbot(IFullPipelineChatbot):
                 PipelineOperation.info("Loading OpenAI Models [LLM, Embedding]...")
                 self.llm = APIOpenAIModel().load(
                     model_name=self.config.openai_model,
-                    config_custom=custom_config
                 )
-                self.embedding_model = APIOpenAIEmbeddingModel().load(
-                    model_name=self.config.openai_embedding,
-                    config_custom=self.config.openai_config_embedding
-                )
+
             else:
                 PipelineOperation.info(f"Loading LLM model: {self.config.model_id}")
                 self.llm = LoadLLMHuggingFace().load(
@@ -113,21 +110,30 @@ class FullPipelineChatbot(IFullPipelineChatbot):
         """Process a user query and return the chatbot's response."""
         try:
             PipelineOperation.info(f"Processing query: {query}")
-
+            RAG = RetrieveRelevantDocuments(self.embedding_model, top_k=self.config.top_k)
             # Retrieve relevant documents
-            relevant_docs = RetrieveRelevantDocuments(top_k=self.config.top_k).relevant(
+            services = RAG.relevant(
                 query=query,
-                embedding_model=self.embedding_model,
-                services_df=self.service_df_com,
-                branches_df=self.branch_df_com,
-                social_media_df=self.social_df_com
+                df=self.service_df_com,
             )
-            PipelineOperation.info(f"Retrieved {len(relevant_docs)} relevant documents.")
+            
+            branches = RAG.relevant(
+                query=query,
+                df=self.branch_df_com,
+            )
+            social_media = RAG.relevant(
+                query=query,
+                df=self.social_df_com,
+            )
+
+            PipelineOperation.info(f"Retrieved {len(services) + len(branches) + len(social_media)} relevant documents.")
 
             # Generate response from the model
             response = ChatbotResponse().gen(
                 query=query,
-                relevant_docs=relevant_docs,
+                relevant_docs={"services":services,
+                               "branches":branches,
+                               "social_media":social_media},
                 llm=self.llm
             )
 
