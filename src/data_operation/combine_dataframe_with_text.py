@@ -76,7 +76,7 @@ class CombinedTables(ICombinedTables):
         
         # Save to CSV
         MAIN_DIR_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
-        data_dir = os.path.join(MAIN_DIR_ROOT, "Data")
+        data_dir = os.path.join(MAIN_DIR_ROOT, "Data/CombindeData")
         os.makedirs(data_dir, exist_ok=True)  # Ensure directory exists
 
         csv_path = os.path.join(data_dir, f"data{columns[-1]}.csv")
