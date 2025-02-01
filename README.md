@@ -132,5 +132,5 @@ This project is licensed under the MIT License.
 ## Contact
 
 For questions or suggestions, contact alrashidissa2001@hotmail.com or open an issue on GitHub.
-
+![alt text](/workspaces/Chatbot-For-Dental-Clinic/assets/image.png)
 
