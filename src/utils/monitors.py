@@ -11,86 +11,75 @@ MAIN_DIR = current_dir
 while MAIN_DIR.name != "Chatbot-For-Dental-Clinic":
     MAIN_DIR = MAIN_DIR.parent
 
-# Now you have the main project directory path
-# Define the log directory relative to the project folder
+# Define the log directory
 LOG_DIR = MAIN_DIR / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)  # Ensure log directory exists
 
-# Create the directory if it doesn't exist
-LOG_DIR.mkdir(parents=True, exist_ok=True)
+# Formatter for file logs (clean, no colors)
+file_formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
-# Create a function to set up the logger
+# Custom emoji mapping per logger
+LOG_EMOJIS = {
+    "HighLevelErrors": "🔴",
+    "ModelingOperation": "🟣",
+    "APIOperation": "🟢",
+    "DataOperation": "🔵",
+    "PipelineOperation": "🟡"
+}
+
+# Custom color mapping per logger
+LOG_COLORS = {
+    "HighLevelErrors": "red",
+    "ModelingOperation": "cyan",
+    "APIOperation": "green",
+    "DataOperation": "blue",
+    "PipelineOperation": "yellow"
+}
+
 def setup_logger(name, log_file, level=logging.INFO):
-    # Create a logger
+    """Setup logger with emoji-based color formatting for console and clean file logs."""
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
-    # Create a file handler
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setLevel(level)
+    # Avoid adding duplicate handlers
+    if not logger.hasHandlers():
+        # File handler (plain logs)
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setLevel(level)
+        file_handler.setFormatter(file_formatter)
 
-    # Create a color handler for the console
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(level)
+        # Console handler (emoji + color logs)
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
+        console_formatter = colorlog.ColoredFormatter(
+            f"%(asctime)s - %(name)s - {LOG_EMOJIS.get(name, '⚪')}%(log_color)s%(levelname)s - %(message)s",
+            datefmt='%Y-%m-%d %H:%M:%S',
+            log_colors={name: LOG_COLORS.get(name, "white")}  # Default to white if no color is assigned
+        )
+        console_handler.setFormatter(console_formatter)
 
-    # Create a colored log formatter
-    formatter = colorlog.ColoredFormatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S',
-        reset=True,
-        log_colors={
-            'DEBUG': 'blue',
-            'INFO': 'green',
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'bold_red',
-        }
-    )
-
-    # Set the formatter for both handlers
-    file_handler.setFormatter(formatter)
-    console_handler.setFormatter(formatter)
-
-    # Add the handlers to the logger
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+        # Attach handlers
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
 
     return logger
 
-
-# Create loggers with color output
-HighLevelErrors = setup_logger(
-    name="HighLevelErrors", 
-    log_file=LOG_DIR / "HighLevelErrors.log", 
-    level=logging.ERROR)
-
-ModelingOperation = setup_logger(
-    name="ModelingOperation", 
-    log_file=LOG_DIR / "ModelingOperation.log", 
-    level=logging.INFO)
-
-APIOperation = setup_logger(
-    name="APIOperation", 
-    log_file=LOG_DIR / "APIOperation.log", 
-    level=logging.INFO)
-
-DataOperation = setup_logger(
-    name="DataOperation", 
-    log_file=LOG_DIR / "DataOperation.log", 
-    level=logging.INFO)
-
-PipelineOperation = setup_logger(
-    name="PipelineOperation", 
-    log_file=LOG_DIR / "PipelineOperation.log",
-     level=logging.INFO)
-
+# Initialize loggers with unique colors & emojis
+HighLevelErrors = setup_logger("HighLevelErrors", LOG_DIR / "HighLevelErrors.log", logging.ERROR)
+ModelingOperation = setup_logger("ModelingOperation", LOG_DIR / "ModelingOperation.log", logging.INFO)
+APIOperation = setup_logger("APIOperation", LOG_DIR / "APIOperation.log", logging.INFO)
+DataOperation = setup_logger("DataOperation", LOG_DIR / "DataOperation.log", logging.INFO)
+PipelineOperation = setup_logger("PipelineOperation", LOG_DIR / "PipelineOperation.log", logging.INFO)
 
 if __name__ == "__main__":
-    # Example logging calls
-    HighLevelErrors.error("This is an error message.")
-    ModelingOperation.info("This is an info message.")
-    APIOperation.info("This is a warning message.")
-    DataOperation.info("This is a warning message.")
-    PipelineOperation.info("This is a warning message.")
+    # Sample logs with custom colors and emojis
+    HighLevelErrors.error("Critical system failure detected!")  # 🔴
+    ModelingOperation.info("Modeling pipeline started successfully.")  # 🔵
+    APIOperation.info("Received query: 'What are your clinic hours?'")  # 🟢
+    DataOperation.info("Database updated successfully.")  # 🔵
+    PipelineOperation.info("Chatbot response generated.")  # 🟡
 
-    # Print log file location
-    print(f"Logs are stored in: {LOG_DIR}")
+    print(f"✅ Logs are stored in: {LOG_DIR}")
