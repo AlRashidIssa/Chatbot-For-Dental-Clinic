@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import sys
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
@@ -19,6 +20,9 @@ from utils.monitors import HighLevelErrors, APIOperation
 
 # Load configuration
 config = load_config_from_yaml()
+
+# Get the correct templates directory path
+TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 
 # Pydantic model for request body
 class QueryModel(BaseModel):
@@ -42,7 +46,7 @@ class ChatbotAPI:
         self.app = FastAPI()
         self.chatbot = FullPipelineChatbot(config=config)
         self.chat_edge = ChatHistoryEdge()
-        self.templates = Jinja2Templates(directory="templates")
+        self.templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
         # Mount static files for CSS/JS
         self.app.mount("/static", StaticFiles(directory=f"{MAIN_DIR}/api/static"), name="static")
@@ -96,7 +100,7 @@ class ChatbotAPI:
             raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-# Initialize the ChatbotAPI class
-chatbot_api = ChatbotAPI()
-# Expose the FastAPI app for integration with main.py
-app = chatbot_api.app
+# # Initialize the ChatbotAPI class
+# chatbot_api = ChatbotAPI()
+# # Expose the FastAPI app for integration with main.py
+# app = chatbot_api.app
