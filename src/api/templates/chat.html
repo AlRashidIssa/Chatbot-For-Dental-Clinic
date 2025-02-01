@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <!-- Add marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <!-- Markdown parsing -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,7 +18,8 @@
         }
 
         .chat-container {
-            width: 400px;
+            width: 90%;
+            max-width: 500px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -41,14 +42,15 @@
             display: flex;
             flex-direction: column;
             max-height: 500px;
-            scroll-behavior: smooth; /* Smooth scrolling */
+            scroll-behavior: smooth;
         }
 
         .message {
-            max-width: 70%;
+            max-width: 80%;
             margin-bottom: 10px;
             padding: 10px;
             border-radius: 10px;
+            font-size: clamp(14px, 2.5vw, 16px); /* Dynamic font size */
         }
 
         .user-message {
@@ -72,6 +74,7 @@
             padding: 10px;
             border: none;
             outline: none;
+            font-size: clamp(14px, 2.5vw, 16px); /* Dynamic font size */
         }
 
         .chat-input button {
@@ -80,6 +83,7 @@
             color: #fff;
             border: none;
             cursor: pointer;
+            font-size: clamp(14px, 2.5vw, 16px); /* Dynamic font size */
         }
 
         .chat-input button:hover {
@@ -107,48 +111,48 @@
             const chatBox = document.getElementById('chat-box');
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-    
+
         // Send message when Enter is pressed
         document.getElementById('user-input').addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 sendMessage();
             }
         });
-    
+
         async function sendMessage() {
             const userInput = document.getElementById('user-input').value.trim();
             if (!userInput) return;
-    
+
             const chatBox = document.getElementById('chat-box');
-    
+
             // Append user message
             const userMessage = document.createElement('div');
             userMessage.className = 'message user-message';
             userMessage.textContent = userInput;
             chatBox.appendChild(userMessage);
             document.getElementById('user-input').value = '';
-    
+
             scrollToBottom();
-    
+
             try {
                 const response = await fetch('/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query: userInput }),
                 });
-    
+
                 if (!response.ok) {
                     throw new Error(`Server error: ${response.status}`);
                 }
-    
+
                 const data = await response.json();  // Expecting JSON response with "response" field
-    
-                // Append bot message
+
+                // Append bot message with Markdown support
                 const botMessage = document.createElement('div');
                 botMessage.className = 'message bot-message';
-                botMessage.textContent = data.response;  // Display the chatbot response
+                botMessage.innerHTML = marked.parse(data.response);  // Render Markdown
                 chatBox.appendChild(botMessage);
-    
+
             } catch (error) {
                 console.error('Error:', error);
                 const errorMessage = document.createElement('div');
@@ -156,10 +160,9 @@
                 errorMessage.textContent = 'Error: Unable to fetch response.';
                 chatBox.appendChild(errorMessage);
             }
-    
+
             scrollToBottom();
         }
     </script>
-    
 </body>
 </html>
